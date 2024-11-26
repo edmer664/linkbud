@@ -13,7 +13,7 @@ if ($mode === 'login') {
 
     if (AuthHelper::authenticate($email, $password)) {
         error_log("Login successful for email: $email");
-        header('Location: ../dashboard.php');
+        header('Location: ../app/dashboard.php');
     } else {
         error_log("Login failed for email: $email");
         $_SESSION['error'] = 'Invalid email or password';
@@ -32,12 +32,16 @@ if ($mode === 'login') {
         $user->create(['name' => $name, 'email' => $email, 'password' => $hashedPassword]);
         error_log("User created with email: $email");
         AuthHelper::authenticate($email, $password);
-        header('Location: ../dashboard.php');
+        header('Location: ../app/dashboard.php');
     } else {
         error_log("Signup failed: Passwords do not match for email: $email");
         $_SESSION['error'] = 'Passwords do not match';
         header('Location: ../signup.php');
     }
+} elseif ($mode === 'logout') {
+    AuthHelper::logout();
+    error_log("User logged out");
+    header('Location: ../index.php');
 } else {
     error_log("Invalid mode: $mode");
     header('Location: ../index.php');

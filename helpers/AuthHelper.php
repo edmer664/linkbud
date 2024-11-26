@@ -10,7 +10,7 @@ class AuthHelper
     public static function requireLogin()
     {
         if (!self::isLoggedIn()) {
-            header('Location: login.php');
+            header('Location: /login.php');
             exit;
         }
     }
@@ -18,7 +18,7 @@ class AuthHelper
     public static function requireGuest()
     {
         if (self::isLoggedIn()) {
-            header('Location: index.php');
+            header('Location: /index.php');
             exit;
         }
     }
@@ -56,7 +56,7 @@ class AuthHelper
     public static function redirectIfAuthenticated()
     {
         if (self::isLoggedIn()) {
-            header('Location: dashboard.php');
+            header('Location: app/dashboard.php');
             exit;
         }
     }
@@ -64,7 +64,7 @@ class AuthHelper
     public static function redirectIfNotAuthenticated()
     {
         if (!self::isLoggedIn()) {
-            header('Location: login.php');
+            header('Location: /login.php');
             exit;
         }
     }
@@ -72,7 +72,7 @@ class AuthHelper
     public static function checkLogin()
     {
         if (self::isLoggedIn()) {
-            header('Location: dashboard.php');
+            header('Location: app/dashboard.php');
             exit;
         }
     }
