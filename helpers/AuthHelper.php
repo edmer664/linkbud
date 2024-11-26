@@ -69,6 +69,11 @@ class AuthHelper
         }
     }
 
-
-
+    public static function checkLogin()
+    {
+        if (self::isLoggedIn()) {
+            header('Location: dashboard.php');
+            exit;
+        }
+    }
 }

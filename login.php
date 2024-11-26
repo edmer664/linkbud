@@ -1,3 +1,7 @@
+<?php
+require_once 'helpers/AuthHelper.php';
+AuthHelper::checkLogin();
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -49,7 +53,7 @@
         <div class="card shadow-sm" style="width: 20rem;">
             <div class="card-body">
                 <h5 class="card-title text-center">Login</h5>
-                <form action="authenticate.php" method="POST">
+                <form action="/api/auth.php?mode=login" method="POST">
                     <div class="mb-3">
                         <label for="email" class="form-label">Email address</label>
                         <input type="email" class="form-control" id="email" name="email" required>

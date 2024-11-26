@@ -1,3 +1,7 @@
+<?php
+require_once 'helpers/AuthHelper.php';
+AuthHelper::requireGuest();
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -55,7 +59,7 @@
                         <h3>Sign Up</h3>
                     </div>
                     <div class="card-body">
-                        <form action="process_signup.php" method="POST">
+                        <form action="/api/auth.php?mode=signup" method="POST">
                             <div class="mb-3">
                                 <label for="name" class="form-label">Name</label>
                                 <input type="text" class="form-control" id="name" name="name" required>
