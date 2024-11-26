@@ -1,5 +1,6 @@
 <?php
 require_once 'helpers/AuthHelper.php';
+session_start();
 AuthHelper::requireGuest();
 ?>
 <!DOCTYPE html>
@@ -54,6 +55,11 @@ AuthHelper::requireGuest();
     <div class="container mt-5">
         <div class="row justify-content-center">
             <div class="col-md-6">
+                <?php if (isset($_SESSION['error'])): ?>
+                    <div class="alert alert-danger" role="alert">
+                        <?php echo $_SESSION['error']; unset($_SESSION['error']); ?>
+                    </div>
+                <?php endif; ?>
                 <div class="card">
                     <div class="card-header text-center">
                         <h3>Sign Up</h3>
@@ -80,6 +86,7 @@ AuthHelper::requireGuest();
                                 <button type="submit" class="btn btn-primary">Sign Up</button>
                             </div>
                         </form>
+                        <p class="mt-3 text-center">Already have an account? <a href="login.php">Login here</a></p>
                     </div>
                 </div>
             </div>
@@ -87,7 +94,7 @@ AuthHelper::requireGuest();
     </div>
 
     <!-- Footer Section -->
-    <footer class="py-4 bg-dark text-white">
+    <footer class="py-4 bg-dark text-white mt-5">
         <div class="container text-center">
             <p class="mb-0">&copy; <?php echo date("Y"); ?> LinkBud. All rights reserved.</p>
         </div>

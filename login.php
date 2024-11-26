@@ -1,5 +1,6 @@
 <?php
 require_once 'helpers/AuthHelper.php';
+session_start();
 AuthHelper::checkLogin();
 ?>
 <!DOCTYPE html>
@@ -52,6 +53,11 @@ AuthHelper::checkLogin();
     <div class="container d-flex justify-content-center align-items-center" style="min-height: 80vh;">
         <div class="card shadow-sm" style="width: 20rem;">
             <div class="card-body">
+                <?php if (isset($_SESSION['error'])): ?>
+                    <div class="alert alert-danger" role="alert">
+                        <?php echo $_SESSION['error']; unset($_SESSION['error']); ?>
+                    </div>
+                <?php endif; ?>
                 <h5 class="card-title text-center">Login</h5>
                 <form action="/api/auth.php?mode=login" method="POST">
                     <div class="mb-3">
@@ -64,6 +70,9 @@ AuthHelper::checkLogin();
                     </div>
                     <button type="submit" class="btn btn-primary w-100">Login</button>
                 </form>
+                <p class="mt-3 text-center">
+                    Don't have an account? <a href="signup.php">Sign up</a>
+                </p>
             </div>
         </div>
     </div>
