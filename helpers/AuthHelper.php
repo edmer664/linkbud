@@ -23,14 +23,19 @@ class AuthHelper
         }
     }
 
+    public static function hash($password)
+    {
+        return password_hash($password, PASSWORD_DEFAULT);
+    }
+
     public static function authenticate($email, $password)
     {
         require_once 'models/User.php';
 
         $user = new User();
-        $result = $user->read(['email' => $email, 'password' => $password]);
+        $result = $user->read(['email' => $email]);
 
-        if (!empty($result)) {
+        if (!empty($result) && password_verify($password, $result[0]['password'])) {
             $_SESSION['user'] = $result[0];
             return true;
         }
