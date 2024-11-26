@@ -14,8 +14,6 @@
 
     <!-- navbar -->
     <div class="shadow-sm">
-
-
         <header class="container">
             <nav class="navbar navbar-expand-lg py-4">
                 <div class="container-fluid">
@@ -44,6 +42,26 @@
                 </div>
             </nav>
         </header>
+    </div>
+
+    <!-- Login card -->
+    <div class="container d-flex justify-content-center align-items-center" style="min-height: 80vh;">
+        <div class="card shadow-sm" style="width: 20rem;">
+            <div class="card-body">
+                <h5 class="card-title text-center">Login</h5>
+                <form action="authenticate.php" method="POST">
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email address</label>
+                        <input type="email" class="form-control" id="email" name="email" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Password</label>
+                        <input type="password" class="form-control" id="password" name="password" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Login</button>
+                </form>
+            </div>
+        </div>
     </div>
 
     <!-- Footer Section -->
