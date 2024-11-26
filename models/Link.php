@@ -24,4 +24,16 @@ class Link extends Model
         $result = $user->read(['id' => $this->user_id]);
         return !empty($result) ? $result[0] : null;
     }
+
+    /**
+     * Fetch all links related to a specific alias (slug).
+     *
+     * @param string $alias The alias (slug) to search for.
+     * @return array The array of links.
+     */
+    public function read($conditions = [])
+    {
+        // Assuming the parent class Model has a method to fetch data based on conditions
+        return parent::read($conditions);
+    }
 }
