@@ -29,8 +29,9 @@ if ($mode === 'login') {
     if ($password === $confirm_password) {
         $user = new User();
         $hashedPassword = AuthHelper::hash($password);
-        $user->create(['name' => $name, 'email' => $email, 'password' => $hashedPassword]);
-        error_log("User created with email: $email");
+        $slug = strtolower(preg_replace('/[^A-Za-z0-9-]+/', '-', $name));
+        $user->create(['name' => $name, 'email' => $email, 'password' => $hashedPassword, 'slug' => $slug]);
+        error_log("User created with email: $email and slug: $slug");
         AuthHelper::authenticate($email, $password);
         header('Location: ../app/dashboard.php');
     } else {
