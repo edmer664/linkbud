@@ -19,8 +19,6 @@ AuthHelper::requireGuest();
 
     <!-- navbar -->
     <div class="shadow-sm">
-
-
         <header class="container">
             <nav class="navbar navbar-expand-lg py-4">
                 <div class="container-fluid">

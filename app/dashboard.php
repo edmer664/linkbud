@@ -60,7 +60,7 @@ AuthHelper::redirectIfNotAuthenticated();
 
             <!-- Nav Item - Links -->
             <li class="nav-item">
-                <a class="nav-link" href="charts.html">
+                <a class="nav-link" href="./links.php">
                     <i class="fas fa-fw fa-link"></i>
                     <span>Links</span></a>
             </li>
