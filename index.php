@@ -173,7 +173,6 @@
     <section class="cta">
         <div class="cta-content">
             <div class="container">
-
                 <h2 class="text-white display-1 lh-1 mb-4">Ready to Get Started?</h2>
                 <a href="signup.php" class="btn btn-outline-light py-3 px-4 rounded-pill">Sign Up Now</a>
             </div>
@@ -181,7 +180,7 @@
     </section>
 
     <!-- Footer Section -->
-    <footer class="py-4 bg-white">
+    <footer class="py-4 bg-dark text-white">
         <div class="container text-center">
             <p class="mb-0">&copy; <?php echo date("Y"); ?> LinkBud. All rights reserved.</p>
         </div>

@@ -83,7 +83,7 @@
     </div>
 
     <!-- Footer Section -->
-    <footer class="py-4 bg-white">
+    <footer class="py-4 bg-dark text-white">
         <div class="container text-center">
             <p class="mb-0">&copy; <?php echo date("Y"); ?> LinkBud. All rights reserved.</p>
         </div>
