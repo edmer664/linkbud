@@ -6,7 +6,7 @@ require_once 'Link.php';
 class User extends Model
 {
 
-    protected $fields = ['id', 'name', 'email', 'password'];
+    protected $fields = ['id', 'name', 'email', 'password', 'slug'];
 
     public function __construct()
     {
@@ -23,5 +23,11 @@ class User extends Model
     {
         $link = new Link();
         return $link->read(['user_id' => $this->id]);
+    }
+
+    public function getProfileViews()
+    {
+        $profileView = new ProfileView();
+        return $profileView->read(['user_id' => $this->id]);
     }
 }

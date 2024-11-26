@@ -5,7 +5,7 @@ require_once 'User.php';
 
 class Link extends Model
 {
-    protected $fields = ['id', 'url', 'user_id', 'created_at'];
+    protected $fields = ['id', 'alias', 'url', 'user_id', 'created_at'];
 
     public function __construct()
     {
