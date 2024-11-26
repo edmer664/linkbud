@@ -1,0 +1,11 @@
+*{
+    font-family: 'Poppins', sans-serif;
+}
+
+
+/* generate card hover */
+.card:hover{
+    box-shadow: 0 0 20px rgba(0,0,0,0.2);
+    transform: scale(1.05);
+    transition: 0.3s;
+}
