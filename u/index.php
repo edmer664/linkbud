@@ -1,12 +1,13 @@
 <?php
 require_once '../models/Link.php';
 require_once '../models/User.php';
+require_once '../models/ProfileView.php'; // Add this line
 
 $slug = null;
 if (isset($_SERVER['REQUEST_URI'])) {
     $parts = explode('/u/', $_SERVER['REQUEST_URI']);
     if (isset($parts[1])) {
-        $slug = $parts[1];
+        $slug = explode('?', $parts[1])[0]; // Fix to exclude URL parameters
     }
 }
 $links = [];
@@ -14,7 +15,17 @@ $links = [];
 if ($slug) {
     $user = new User();
     $result = $user->read(['slug' => $slug]);
-    $links = !empty($result) ? (new Link())->read(['user_id' => $result[0]->id]) : [];
+    if (!empty($result)) {
+        $links = (new Link())->read(['user_id' => $result[0]->id]);
+        
+        // Create and save a ProfileView instance
+        $profileView = new ProfileView();
+        $profileView->create([
+            'user_id' => $result[0]->id,
+            'referrer' => isset($_GET['ref']) ? $_GET['ref'] : ($_SERVER['HTTP_REFERER'] ?? null),
+            'created_at' => date('Y-m-d H:i:s')
+        ]);
+    }
 }
 ?>
 
@@ -24,7 +35,7 @@ if ($slug) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LinkBud</title>
+    <title><?php echo !empty($links) ? htmlspecialchars($links[0]->getUser()->name) . "'s Links" : 'LinkBud'; ?></title>
 
     <!-- include components.deps -->
     <?php include '../components/deps.php'; ?>
@@ -73,15 +84,17 @@ if ($slug) {
     <div class="container d-flex align-items-center justify-content-center flex-column"
         style="min-height: 80vh;">
         <?php if (!empty($links)): ?>
-            <h2> 
+            <h2>
                 <!-- get user -->
                 <?php echo htmlspecialchars($links[0]->getUser()->name); ?>'s Links
             </h2>
             <div style="text-align: center;" class="d-flex flex-column align-items-center justify-content-center">
                 <?php foreach ($links as $link): ?>
-                    <div><a 
-                        class="btn btn-primary rounded-pill mt-2 w-100"
-                    href="<?php echo htmlspecialchars($link->url); ?>"><?php echo htmlspecialchars($link->name); ?></a></div>
+                    <div><a
+                            class="btn btn-primary rounded-pill mt-2 w-100"
+                            href="/api/redirect.php?id=<?php echo urlencode($link->id); ?>" target="_blank">
+                            <?php echo htmlspecialchars($link->name); ?>
+                        </a></div>
                 <?php endforeach; ?>
             </div>
         <?php else: ?>
