@@ -5,6 +5,27 @@ require_once('../helpers/AuthHelper.php');
 session_start();
 AuthHelper::redirectIfNotAuthenticated();
 
+$user = $_SESSION['user'];
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $userModel = new User();
+    $userModel = $userModel->read(['id' => $user->id])[0];
+    $data = [
+        'name' => $_POST['name'],
+        'email' => $_POST['email'],
+        'slug' => $userModel->slugify($_POST['name']),
+        'password' => password_hash($_POST['password'], PASSWORD_DEFAULT)
+    ];
+    $alertMessage = "";
+    if ($userModel->updateProfile($data)) {
+        $userModel = $userModel->refresh();
+        $_SESSION['user'] = $userModel;
+        $alertMessage = "<div class='alert alert-success'>Profile updated successfully.</div>";
+    } else {
+        $alertMessage = "<div class='alert alert-danger'>Failed to update profile.</div>";
+    }
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -62,7 +83,7 @@ AuthHelper::redirectIfNotAuthenticated();
 
 
             <!-- Nav Item - Links -->
-            <li class="nav-item active">
+            <li class="nav-item">
                 <a class="nav-link" href="./links.php">
                     <i class="fas fa-fw fa-link"></i>
                     <span>Links</span></a>
@@ -127,55 +148,37 @@ AuthHelper::redirectIfNotAuthenticated();
 
                     <!-- Page Heading -->
                     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-                        <h1 class="h3 mb-0 text-gray-800">Links</h1>
+                        <h1 class="h3 mb-0 text-gray-800">Profile</h1>
 
-            <!-- Add The modal trigger here -->
-            <button type="button" class="btn btn-success" data-toggle="modal" data-target="#createLinkModal">
-                Create New Link
-            </button>
+
                     </div>
 
-
-                    <!-- DataTales Example -->
-                    <div class="card shadow mb-4">
-                        <div class="card-header py-3">
-                            <h6 class="m-0 font-weight-bold text-primary">My Links</h6>
-                        </div>
-                        <div class="card-body">
-                            <div class="table-responsive">
-                                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                                    <thead>
-                                        <tr>
-                                            <th>Alias</th>
-                                            <th>Link</th>
-                                            <th>Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tfoot>
-                                        <tr>
-                                            <th>Alias</th>
-                                            <th>Link</th>
-                                            <th>Actions</th>
-                                        </tr>
-                                    </tfoot>
-                                    <tbody>
-                                        <?php
-                                        require_once('../models/Link.php');
-                                        $link = new Link();
-                                        $links = $link->read(['user_id' => $_SESSION['user']->id]);
-                                        foreach ($links as $link) {
-                                            echo "<tr>";
-                                            echo "<td>{$link->name}</td>";
-                                            echo "<td>{$link->url}</td>";
-                                            echo "<td> <a href='/api/links.php?mode=delete&id={$link->id}' class='btn btn-danger'>Delete</a></td>";
-                                            echo "</tr>";
-                                        }
-                                        ?>
-                                    </tbody>
-                                </table>
-                            </div>
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <!-- display alert here -->
+                            <?php if (isset($alertMessage)) echo $alertMessage; ?>
+                            <form method="post" action="">
+                                <div class="form-group">
+                                    <label for="name">Name</label>
+                                    <input type="text" class="form-control" id="name" name="name" value="<?php echo $user->name; ?>" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="email">Email</label>
+                                    <input type="email" class="form-control" id="email" name="email" value="<?php echo $user->email; ?>" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="slug">Slug</label>
+                                    <input type="text" class="form-control" id="slug" name="slug" value="<?php echo $user->slug; ?>" disabled>
+                                </div>
+                                <div class="form-group">
+                                    <label for="password">Password</label>
+                                    <input type="password" class="form-control" id="password" name="password" required>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Update Profile</button>
+                            </form>
                         </div>
                     </div>
+
 
 
                 </div>
@@ -184,35 +187,7 @@ AuthHelper::redirectIfNotAuthenticated();
             </div>
             <!-- End of Main Content -->
 
-            <!-- Create Link Modal -->
-            <div class="modal fade" id="createLinkModal" tabindex="-1" role="dialog" aria-labelledby="createLinkModalLabel" aria-hidden="true">
-                <div class="modal-dialog" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="createLinkModalLabel">Create New Link</h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                        <form action="../api/links.php?mode=create" method="post">
-                            <div class="modal-body">
-                                <div class="form-group">
-                                    <label for="alias">Alias</label>
-                                    <input type="text" class="form-control" id="alias" name="name" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="url">URL</label>
-                                    <input type="url" class="form-control" id="url" name="url" required>
-                                </div>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                <button type="submit" class="btn btn-primary">Save Link</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
+
 
             <!-- Footer -->
             <footer class="sticky-footer bg-white">

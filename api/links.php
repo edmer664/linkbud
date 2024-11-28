@@ -14,14 +14,15 @@ switch ($mode) {
             $result = $link->read();
         }
         $_SESSION['result'] = $result;
-        header('Location: /path/to/your/read/page');
+        header('Location: /app/links.php');
         break;
 
     case 'create':
         $data = $_POST;
+        $data['user_id'] = $_SESSION['user']->id;
         $link->create($data);
         $_SESSION['message'] = 'Link created successfully';
-        header('Location: /path/to/your/create/page');
+        header('Location: /app/links.php');
         break;
 
     case 'update':
@@ -32,7 +33,7 @@ switch ($mode) {
             header('Location: /path/to/your/update/page');
         } else {
             $_SESSION['message'] = 'ID is required for updating';
-            header('Location: /path/to/your/update/page');
+            header('Location: /app/links.php');
         }
         break;
 
@@ -40,16 +41,16 @@ switch ($mode) {
         if (isset($_GET['id'])) {
             $link->delete(['id' => $_GET['id']]);
             $_SESSION['message'] = 'Link deleted successfully';
-            header('Location: /path/to/your/delete/page');
+            header('Location: /app/links.php');
         } else {
             $_SESSION['message'] = 'ID is required for deleting';
-            header('Location: /path/to/your/delete/page');
+            header('Location: /app/links.php');
         }
         break;
 
     default:
         $_SESSION['message'] = 'Invalid mode';
-        header('Location: /path/to/your/error/page');
+        header('Location: /app/links.php');
         break;
 }
 ?>

@@ -11,7 +11,7 @@ class Model
      */
     public function __construct()
     {
-        $this->db = new mysqli('localhost','root','','linkbud');
+        $this->db = new mysqli('localhost', 'root', '', 'linkbud');
     }
 
     /**
@@ -67,7 +67,7 @@ class Model
             $stmt->bind_param($types, ...$params);
         }
         $stmt->execute();
-        
+
         $result = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
         $objects = [];
         foreach ($result as $record) {
@@ -89,6 +89,7 @@ class Model
      */
     public function update($data, $conditions)
     {
+        error_log(print_r($data, true));
         $set = [];
         $params = [];
         $types = '';
@@ -163,5 +164,16 @@ class Model
         }
         $stmt->execute();
         return $stmt->get_result();
+    }
+
+    // function to refetch the current object from the database
+    public function refresh()
+    {
+        try {
+            $result = $this->read(['id' => $this->id]);
+            return $result[0];
+        } catch (Exception $e) {
+            throw new Exception('Error: You must set the ID before refreshing the object.');
+        }
     }
 }

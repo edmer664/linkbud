@@ -25,6 +25,34 @@ class User extends Model
         return $link->read(['user_id' => $this->id]);
     }
 
+    /**
+     * Update the user's profile information.
+     *
+     * @param array $data An associative array of the user's new profile data.
+     * @return bool True on success, false on failure.
+     */
+    public function updateProfile($data)
+    {
+
+        return $this->update($data, ['id' => $this->id]);
+    }
+
+    public function slugify($text)
+    {
+        $text = preg_replace('~[^\pL\d]+~u', '-', $text);
+        $text = iconv('utf-8', 'us-ascii//TRANSLIT', $text);
+        $text = preg_replace('~[^-\w]+~', '', $text);
+        $text = trim($text, '-');
+        $text = preg_replace('~-+~', '-', $text);
+        $text = strtolower($text);
+
+        if (empty($text)) {
+            return 'n-a';
+        }
+
+        return $text;
+    }
+
     public function getProfileViews()
     {
         $profileView = new ProfileView();
