@@ -19,4 +19,16 @@ class ProfileView extends Model
         $result = $user->read(['id' => $this->user_id]);
         return !empty($result) ? $result[0] : null;
     }
+
+    public function getProfileViewsData($userId)
+    {
+        $query = "SELECT DATE(created_at) as date, COUNT(*) as views FROM profile_views WHERE user_id = ? GROUP BY DATE(created_at)";
+        return $this->query($query, [$userId])->fetch_all(MYSQLI_ASSOC);
+    }
+
+    public function getTopReferrers($userId)
+    {
+        $query = "SELECT referrer, COUNT(*) as visits FROM profile_views WHERE user_id = ? GROUP BY referrer ORDER BY visits DESC";
+        return $this->query($query, [$userId])->fetch_all(MYSQLI_ASSOC);
+    }
 }

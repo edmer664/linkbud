@@ -16,6 +16,10 @@ $mostVisitedLinkYTD = $link->query("SELECT links.name, COUNT(*) as visits FROM l
 $topReferrer = $link->query("SELECT referrer, COUNT(*) as visits FROM profile_views WHERE user_id = ? GROUP BY referrer ORDER BY visits DESC LIMIT 1", [$user->id])->fetch_assoc();
 $profileViewsCount = $user->countProfileViews();
 
+$profileView = new ProfileView();
+$profileViewsData = $profileView->getProfileViewsData($user->id);
+$topReferrersData = $profileView->getTopReferrers($user->id);
+
 ?>
 
 <!DOCTYPE html>
@@ -151,9 +155,9 @@ $profileViewsCount = $user->countProfileViews();
                                         <div class="col mr-2">
                                             <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
                                                 Most Visited Link (Monthly)</div>
-                                                <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                                    <?php echo $mostVisitedLinkMonthly['name'] ?? 'N/A'; ?>
-                                                </div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                                <?php echo $mostVisitedLinkMonthly['name'] ?? 'N/A'; ?>
+                                            </div>
                                         </div>
                                         <div class="col-auto">
                                             <i class="fas fa-chart-bar
@@ -246,17 +250,12 @@ $profileViewsCount = $user->countProfileViews();
                                 <div
                                     class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
                                     <h6 class="m-0 font-weight-bold text-primary">Profile Views Overview</h6>
-                                    <div class="dropdown no-arrow">
-                                        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
-                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                            <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
-                                        </a>
-                                    </div>
                                 </div>
                                 <!-- Card Body -->
                                 <div class="card-body">
                                     <div class="chart-area">
-                                        <canvas id="myAreaChart"></canvas>
+                                        <!-- TODO -->
+                                        <canvas id="profileViewsOverview"></canvas>
                                     </div>
                                 </div>
                             </div>
@@ -279,18 +278,10 @@ $profileViewsCount = $user->countProfileViews();
                                 <!-- Card Body -->
                                 <div class="card-body">
                                     <div class="chart-pie pt-4 pb-2">
-                                        <canvas id="myPieChart"></canvas>
+                                        <canvas id="referrerPieChart"></canvas>
                                     </div>
-                                    <div class="mt-4 text-center small">
-                                        <span class="mr-2">
-                                            <i class="fas fa-circle text-primary"></i> Direct
-                                        </span>
-                                        <span class="mr-2">
-                                            <i class="fas fa-circle text-success"></i> Social
-                                        </span>
-                                        <span class="mr-2">
-                                            <i class="fas fa-circle text-info"></i> Referral
-                                        </span>
+                                    <div class="mt-4 text-center small d-flex flex-column align-items-start">
+                                        <!-- Dynamic legend will be inserted here -->
                                     </div>
                                 </div>
                             </div>
@@ -362,8 +353,130 @@ $profileViewsCount = $user->countProfileViews();
     <script src="vendor/chart.js/Chart.min.js"></script>
 
     <!-- Page level custom scripts -->
-    <script src="js/demo/chart-area-demo.js"></script>
-    <script src="js/demo/chart-pie-demo.js"></script>
+    <script>
+        // AREA CHART
+        const profileViewsData = <?php echo json_encode($profileViewsData); ?>;
+        const ctx = document.getElementById('profileViewsOverview').getContext('2d');
+        const labels = profileViewsData.map(data => data.date);
+        const data = profileViewsData.map(data => data.views);
+
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Profile Views',
+                    data: data,
+                    backgroundColor: 'rgba(78, 115, 223, 0.05)',
+                    borderColor: 'rgba(78, 115, 223, 1)',
+                    pointRadius: 3,
+                    pointBackgroundColor: 'rgba(78, 115, 223, 1)',
+                    pointBorderColor: 'rgba(78, 115, 223, 1)',
+                    pointHoverRadius: 3,
+                    pointHoverBackgroundColor: 'rgba(78, 115, 223, 1)',
+                    pointHoverBorderColor: 'rgba(78, 115, 223, 1)',
+                    pointHitRadius: 10,
+                    pointBorderWidth: 2,
+                }],
+            },
+            options: {
+                maintainAspectRatio: false,
+                scales: {
+                    xAxes: [{
+                        time: {
+                            unit: 'date'
+                        },
+                        gridLines: {
+                            display: false,
+                            drawBorder: false
+                        },
+                        ticks: {
+                            maxTicksLimit: 7
+                        }
+                    }],
+                    yAxes: [{
+                        ticks: {
+                            maxTicksLimit: 5,
+                            padding: 10,
+                        },
+                        gridLines: {
+                            color: 'rgb(234, 236, 244)',
+                            zeroLineColor: 'rgb(234, 236, 244)',
+                            drawBorder: false,
+                            borderDash: [2],
+                            zeroLineBorderDash: [2]
+                        }
+                    }],
+                },
+                legend: {
+                    display: false
+                },
+                tooltips: {
+                    backgroundColor: 'rgb(255,255,255)',
+                    bodyFontColor: '#858796',
+                    titleMarginBottom: 10,
+                    titleFontColor: '#6e707e',
+                    titleFontSize: 14,
+                    borderColor: '#dddfeb',
+                    borderWidth: 1,
+                    xPadding: 15,
+                    yPadding: 15,
+                    displayColors: false,
+                    intersect: false,
+                    mode: 'index',
+                    caretPadding: 10,
+                }
+            }
+        });
+    </script>
+
+    <script>
+        // PIE CHART
+        const topReferrersData = <?php echo json_encode($topReferrersData); ?>;
+        const referrerCtx = document.getElementById('referrerPieChart').getContext('2d');
+        const referrerLabels = topReferrersData.map(data => data.referrer);
+        const referrerData = topReferrersData.map(data => data.visits);
+
+        new Chart(referrerCtx, {
+            type: 'pie',
+            data: {
+                labels: referrerLabels,
+                datasets: [{
+                    data: referrerData,
+                    backgroundColor: ['#4e73df', '#1cc88a', '#36b9cc', '#f6c23e', '#e74a3b', '#858796', '#f8f9fc', '#5a5c69'],
+                    hoverBackgroundColor: ['#2e59d9', '#17a673', '#2c9faf', '#f4b619', '#e02d1b', '#6c757d', '#d1d3e2', '#4e4e50'],
+                    hoverBorderColor: "rgba(234, 236, 244, 1)",
+                }],
+            },
+            options: {
+                maintainAspectRatio: false,
+                tooltips: {
+                    backgroundColor: "rgb(255,255,255)",
+                    bodyFontColor: "#858796",
+                    borderColor: '#dddfeb',
+                    borderWidth: 1,
+                    xPadding: 15,
+                    yPadding: 15,
+                    displayColors: false,
+                    caretPadding: 10,
+                },
+                legend: {
+                    display: false
+                },
+                cutoutPercentage: 0,
+            },
+        });
+
+        // Dynamic legend
+        const legendContainer = document.querySelector('.chart-pie + .mt-4.text-center.small');
+        topReferrersData.forEach((data, index) => {
+            const color = ['#4e73df', '#1cc88a', '#36b9cc', '#f6c23e', '#e74a3b', '#858796', '#f8f9fc', '#5a5c69'][index % 8];
+            const legendItem = document.createElement('span');
+            legendItem.classList.add('mr-2');
+            legendItem.innerHTML = `<i class="fas fa-circle" style="color: ${color};"></i> ${data.referrer}`;
+            legendContainer.appendChild(legendItem);
+        });
+    </script>
 
 </body>
 
