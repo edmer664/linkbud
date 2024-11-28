@@ -47,10 +47,30 @@ class User extends Model
         $text = strtolower($text);
 
         if (empty($text)) {
-            return 'n-a';
+            $text = 'n-a';
+        }
+
+        // Ensure the slug is unique
+        $originalText = $text;
+        $counter = 1;
+        while ($this->slugExists($text)) {
+            $text = $originalText . '-' . $counter;
+            $counter++;
         }
 
         return $text;
+    }
+
+    /**
+     * Check if a slug already exists in the database.
+     *
+     * @param string $slug The slug to check.
+     * @return bool True if the slug exists, false otherwise.
+     */
+    private function slugExists($slug)
+    {
+        $result = $this->read(['slug' => $slug]);
+        return !empty($result);
     }
 
     public function getProfileViews()
