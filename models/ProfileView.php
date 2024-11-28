@@ -11,4 +11,12 @@ class ProfileView extends Model
         parent::__construct();
         $this->setTable('profile_views');
     }
+
+    // get the user associated with this profile view
+    public function getUser()
+    {
+        $user = new User();
+        $result = $user->read(['id' => $this->user_id]);
+        return !empty($result) ? $result[0] : null;
+    }
 }

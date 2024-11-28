@@ -78,4 +78,9 @@ class User extends Model
         $profileView = new ProfileView();
         return $profileView->read(['user_id' => $this->id]);
     }
+
+    public function countProfileViews()
+    {
+        return count($this->getProfileViews());
+    }
 }

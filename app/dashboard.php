@@ -2,8 +2,19 @@
 // import user model
 require_once('../models/User.php');
 require_once('../helpers/AuthHelper.php');
+require_once('../models/Link.php');
+require_once('../models/LinkLog.php');
+require_once('../models/ProfileView.php');
+
 session_start();
 AuthHelper::redirectIfNotAuthenticated();
+
+$user = $_SESSION['user'];
+$link = new Link();
+$mostVisitedLinkMonthly = $link->query("SELECT links.name, COUNT(*) as visits FROM link_logs JOIN links ON link_logs.link_id = links.id WHERE links.user_id = ? AND MONTH(link_logs.created_at) = MONTH(CURRENT_DATE()) GROUP BY links.name ORDER BY visits DESC LIMIT 1", [$user->id])->fetch_assoc();
+$mostVisitedLinkYTD = $link->query("SELECT links.name, COUNT(*) as visits FROM link_logs JOIN links ON link_logs.link_id = links.id WHERE links.user_id = ? AND YEAR(link_logs.created_at) = YEAR(CURRENT_DATE()) GROUP BY links.name ORDER BY visits DESC LIMIT 1", [$user->id])->fetch_assoc();
+$topReferrer = $link->query("SELECT referrer, COUNT(*) as visits FROM profile_views WHERE user_id = ? GROUP BY referrer ORDER BY visits DESC LIMIT 1", [$user->id])->fetch_assoc();
+$profileViewsCount = $user->countProfileViews();
 
 ?>
 
@@ -35,7 +46,7 @@ AuthHelper::redirectIfNotAuthenticated();
 
     <!-- Page Wrapper -->
     <div id="wrapper">
-        
+
 
         <!-- Sidebar -->
         <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
@@ -67,7 +78,7 @@ AuthHelper::redirectIfNotAuthenticated();
             </li>
 
 
-           
+
         </ul>
         <!-- End of Sidebar -->
 
@@ -140,9 +151,9 @@ AuthHelper::redirectIfNotAuthenticated();
                                         <div class="col mr-2">
                                             <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
                                                 Most Visited Link (Monthly)</div>
-                                        </div>
-                                        <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                            <!-- TODO -->
+                                                <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                                    <?php echo $mostVisitedLinkMonthly['name'] ?? 'N/A'; ?>
+                                                </div>
                                         </div>
                                         <div class="col-auto">
                                             <i class="fas fa-chart-bar
@@ -163,7 +174,7 @@ AuthHelper::redirectIfNotAuthenticated();
                                                 Most Visited Link (YTD)
                                             </div>
                                             <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                                <!-- TODO -->
+                                                <?php echo $mostVisitedLinkYTD['name'] ?? 'N/A'; ?>
                                             </div>
                                         </div>
                                         <div class="col-auto">
@@ -185,16 +196,13 @@ AuthHelper::redirectIfNotAuthenticated();
                                                 Top Referrer
                                             </div>
                                             <div class="row no-gutters align-items-center">
-                                                <div class="col-auto">
-                                                    <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">50%</div>
+
+                                                <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">
+                                                    <?php echo $topReferrer['referrer'] ?? 'N/A'; ?>
                                                 </div>
-                                                <div class="col">
-                                                    <div class="progress progress-sm mr-2">
-                                                        <div class="progress-bar bg-info" role="progressbar"
-                                                            style="width: 50%" aria-valuenow="50" aria-valuemin="0"
-                                                            aria-valuemax="100"></div>
-                                                    </div>
-                                                </div>
+
+
+
                                             </div>
                                         </div>
                                         <div class="col-auto">
@@ -214,7 +222,9 @@ AuthHelper::redirectIfNotAuthenticated();
                                             <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
                                                 Profile Views
                                             </div>
-                                            <div class="h5 mb-0 font-weight-bold text-gray-800">18</div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                                <?php echo $profileViewsCount; ?>
+                                            </div>
                                         </div>
                                         <div class="col-auto">
                                             <i class="fas fa-comments fa-2x text-gray-300"></i>
@@ -287,7 +297,7 @@ AuthHelper::redirectIfNotAuthenticated();
                         </div>
                     </div>
 
-                    
+
 
                 </div>
                 <!-- /.container-fluid -->
