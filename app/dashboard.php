@@ -144,6 +144,32 @@ $topReferrersData = $profileView->getTopReferrers($user->id);
 
                     </div>
 
+                    <!-- Row -->
+                     <!-- display user link -->
+                    <div class="row">
+                        <!-- Display user link -->
+                        <div class="col-xl-12 col-md-12 mb-4">
+                            <div class="card border-left-primary shadow h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                                Your Link
+                                            </div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                                <a href="/u/<?php echo $user->slug; ?>" id="userLink">/u/<?php echo $user->slug; ?></a>
+                                                <button class="btn btn-sm btn-primary ml-2" onclick="copyLink()">Copy Link</button>
+                                            </div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fas fa-link fa-2x text-gray-300"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Content Row -->
                     <div class="row">
 
@@ -202,7 +228,7 @@ $topReferrersData = $profileView->getTopReferrers($user->id);
                                             <div class="row no-gutters align-items-center">
 
                                                 <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">
-                                                    <?php echo $topReferrer['referrer'] ?? 'N/A'; ?>
+                                                    <?php echo isset($topReferrer['referrer']) ? (strlen($topReferrer['referrer']) > 20 ? substr($topReferrer['referrer'], 0, 20) . '...' : $topReferrer['referrer']) : 'N/A'; ?>
                                                 </div>
 
 
@@ -476,6 +502,32 @@ $topReferrersData = $profileView->getTopReferrers($user->id);
             legendItem.innerHTML = `<i class="fas fa-circle" style="color: ${color};"></i> ${data.referrer}`;
             legendContainer.appendChild(legendItem);
         });
+    </script>
+
+    <script>
+        function copyLink() {
+            const link = document.getElementById('userLink').href;
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(link).then(() => {
+                    alert('Link copied to clipboard');
+                }).catch(err => {
+                    console.error('Failed to copy link: ', err);
+                });
+            } else {
+                const textArea = document.createElement('textarea');
+                textArea.value = link;
+                document.body.appendChild(textArea);
+                textArea.focus();
+                textArea.select();
+                try {
+                    document.execCommand('copy');
+                    alert('Link copied to clipboard');
+                } catch (err) {
+                    console.error('Failed to copy link: ', err);
+                }
+                document.body.removeChild(textArea);
+            }
+        }
     </script>
 
 </body>
